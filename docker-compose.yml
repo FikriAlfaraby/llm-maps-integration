@@ -37,7 +37,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=http://localhost:5000/api
+      - REACT_APP_API_URL=https://heypico-demo.fikrialfaraby.com/api
     depends_on:
       - backend
     networks:

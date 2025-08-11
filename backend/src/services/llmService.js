@@ -7,7 +7,7 @@ class LLMService {
     this.provider = config.llm.provider;
     this.endpoint = config.llm.endpoint;
     this.model = config.llm.model;
-    this.timeout = config.llm.timeout || 60000;
+    this.timeout = config.llm.timeout || 300000;
     this.defaultTemperature = config.llm.temperature ?? 0.7;
     this.defaultMaxTokens = config.llm.maxTokens ?? 500;
   }

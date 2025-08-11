@@ -4,7 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config();
 
 const config = require("./config/config");
 const logger = require("./utils/logger");

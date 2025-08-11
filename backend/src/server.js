@@ -1,22 +1,19 @@
-// backend/src/server.js
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 
 const config = require("./config/config");
 const logger = require("./utils/logger");
-const apiRoutes = require("./routes/api");
+const apiRoutes = require("./routes/queryRoutes");
 
 const app = express();
 
-// Security middleware
 app.use(helmet());
 
-// CORS configuration
 app.use(
   cors({
     origin: config.security.corsOrigin,
@@ -24,14 +21,11 @@ app.use(
   })
 );
 
-// Compression
 app.use(compression());
 
-// Body parsing
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Logging
 app.use(
   morgan("combined", {
     stream: {
@@ -40,7 +34,6 @@ app.use(
   })
 );
 
-// Rate limiting
 const limiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
   max: config.rateLimit.maxRequests,
@@ -49,10 +42,8 @@ const limiter = rateLimit({
 
 app.use("/api/", limiter);
 
-// API routes
 app.use("/api", apiRoutes);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   logger.error("Unhandled error:", err);
   res.status(500).json({
@@ -61,12 +52,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// Start server
 const PORT = config.port;
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);

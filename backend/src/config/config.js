@@ -25,7 +25,7 @@ module.exports = {
     model: process.env.LLM_MODEL || "mistral:7b-instruct-q4_0",
     maxTokens: parseInt(process.env.LLM_MAX_TOKENS) || 500,
     temperature: parseFloat(process.env.LLM_TEMPERATURE) || 0.7,
-    timeout: parseInt(process.env.LLM_TIMEOUT) || 30000,
+    timeout: parseInt(process.env.LLM_TIMEOUT) || 1000000,
   },
 
   // Redis

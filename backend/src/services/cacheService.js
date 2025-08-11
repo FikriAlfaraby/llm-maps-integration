@@ -1,4 +1,3 @@
-// backend/src/services/cacheService.js
 const redis = require("redis");
 const crypto = require("crypto");
 const config = require("../config/config");

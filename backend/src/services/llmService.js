@@ -10,6 +10,7 @@ class LLMService {
     this.timeout = config.llm.timeout || 300000;
     this.defaultTemperature = config.llm.temperature ?? 0.7;
     this.defaultMaxTokens = config.llm.maxTokens ?? 500;
+    this.keepAlive = config.llm.keepAlive || "5m";
   }
 
   async generateResponse(prompt, systemPrompt = null, opts = {}) {
@@ -53,9 +54,14 @@ class LLMService {
       model: this.model,
       messages,
       stream: false,
+      keep_alive: this.keepAlive,
       options: {
         temperature: opts.temperature,
         num_predict: opts.maxTokens,
+        // Tambahan optimasi
+        num_ctx: 2048, // Context window
+        num_batch: 128, // Batch size
+        num_thread: 4, // CPU threads
       },
     };
 

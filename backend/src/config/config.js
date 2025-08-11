@@ -1,4 +1,3 @@
-// backend/src/config/config.js
 require("dotenv").config();
 
 module.exports = {
@@ -26,6 +25,7 @@ module.exports = {
     maxTokens: parseInt(process.env.LLM_MAX_TOKENS) || 500,
     temperature: parseFloat(process.env.LLM_TEMPERATURE) || 0.7,
     timeout: parseInt(process.env.LLM_TIMEOUT) || 1000000,
+    keepAlive: "5m",
   },
 
   // Redis

@@ -19,6 +19,9 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_HOST=redis
+      - LLAMA_API_URL=http://host.docker.internal:11434/api
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # For Linux
     env_file:
       - .env
     volumes:

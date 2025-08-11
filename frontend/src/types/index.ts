@@ -1,4 +1,3 @@
-// frontend/src/types/index.ts
 export interface Location {
   lat: number;
   lng: number;

@@ -1,5 +1,4 @@
-// frontend/src/components/PlaceCard.tsx
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -9,10 +8,10 @@ import {
   Chip,
   Box,
   Rating,
-} from '@mui/material';
-import DirectionsIcon from '@mui/icons-material/Directions';
-import MapIcon from '@mui/icons-material/Map';
-import { Place } from '../types';
+} from "@mui/material";
+import DirectionsIcon from "@mui/icons-material/Directions";
+import MapIcon from "@mui/icons-material/Map";
+import { Place } from "../types";
 
 interface PlaceCardProps {
   place: Place;
@@ -20,22 +19,29 @@ interface PlaceCardProps {
   onShowDetails?: (place: Place) => void;
 }
 
-const PlaceCard: React.FC<PlaceCardProps> = ({ place, index, onShowDetails }) => {
+const PlaceCard: React.FC<PlaceCardProps> = ({
+  place,
+  index,
+  onShowDetails,
+}) => {
   return (
-    <Card elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card
+      elevation={2}
+      sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+    >
       <CardContent sx={{ flexGrow: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
           <Box
             sx={{
               width: 32,
               height: 32,
-              borderRadius: '50%',
-              backgroundColor: 'primary.main',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 'bold',
+              borderRadius: "50%",
+              backgroundColor: "primary.main",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
               mr: 2,
               flexShrink: 0,
             }}
@@ -53,8 +59,13 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, index, onShowDetails }) =>
         </Box>
 
         {place.rating && (
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <Rating value={place.rating} readOnly precision={0.1} size="small" />
+          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Rating
+              value={place.rating}
+              readOnly
+              precision={0.1}
+              size="small"
+            />
             <Typography variant="body2" sx={{ ml: 1 }}>
               {place.rating} ({place.user_ratings_total || 0} reviews)
             </Typography>
@@ -63,8 +74,8 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, index, onShowDetails }) =>
 
         {place.open_now !== null && (
           <Chip
-            label={place.open_now ? 'Open Now' : 'Closed'}
-            color={place.open_now ? 'success' : 'error'}
+            label={place.open_now ? "Open Now" : "Closed"}
+            color={place.open_now ? "success" : "error"}
             size="small"
             sx={{ mb: 1 }}
           />
@@ -72,7 +83,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, index, onShowDetails }) =>
 
         {place.price_level && (
           <Typography variant="body2" sx={{ mb: 1 }}>
-            Price: {'$'.repeat(place.price_level)}
+            Price: {"$".repeat(place.price_level)}
           </Typography>
         )}
       </CardContent>

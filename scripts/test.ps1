@@ -1,4 +1,3 @@
-# scripts/test.ps1
 Write-Host "Running System Tests..." -ForegroundColor Cyan
 Write-Host "========================" -ForegroundColor Cyan
 

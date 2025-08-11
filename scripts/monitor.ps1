@@ -1,4 +1,3 @@
-# scripts/monitor.ps1
 Write-Host "Monitoring LLM Maps Integration Services" -ForegroundColor Cyan
 Write-Host "Press Ctrl+C to exit" -ForegroundColor Yellow
 Write-Host ""

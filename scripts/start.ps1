@@ -1,4 +1,3 @@
-# scripts/start.ps1
 Write-Host "Starting LLM Maps Integration..." -ForegroundColor Cyan
 
 # Start Redis if not running

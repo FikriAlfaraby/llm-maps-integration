@@ -1,13 +1,13 @@
-// frontend/src/services/api.ts
-import axios from 'axios';
-import { QueryRequest, QueryResponse, Place } from '../types';
+import axios from "axios";
+import { QueryRequest, QueryResponse, Place } from "../types";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "https://heypico-demo.fikrialfaraby.com/api";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -15,7 +15,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Add auth token if available
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,33 +31,30 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 429) {
-      console.error('Rate limit exceeded');
+      console.error("Rate limit exceeded");
     }
     return Promise.reject(error);
   }
 );
 
 export const api = {
-  // Query places
   queryPlaces: async (request: QueryRequest): Promise<QueryResponse> => {
-    const response = await apiClient.post<QueryResponse>('/query', request);
+    const response = await apiClient.post<QueryResponse>("/query", request);
     return response.data;
   },
 
-  // Get place details
   getPlaceDetails: async (placeId: string): Promise<Place> => {
     const response = await apiClient.get<Place>(`/place/${placeId}`);
     return response.data;
   },
 
-  // Search nearby
   searchNearby: async (
     location: { lat: number; lng: number },
     placeType: string,
     radius?: number,
     keyword?: string
   ) => {
-    const response = await apiClient.post('/nearby', {
+    const response = await apiClient.post("/nearby", {
       location,
       place_type: placeType,
       radius,
@@ -66,9 +63,8 @@ export const api = {
     return response.data;
   },
 
-  // Health check
   healthCheck: async () => {
-    const response = await apiClient.get('/health');
+    const response = await apiClient.get("/health");
     return response.data;
   },
 };

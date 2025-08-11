@@ -1,7 +1,6 @@
-// frontend/src/components/MapView.tsx
-import React from 'react';
-import { Box, Paper, Typography } from '@mui/material';
-import { Place } from '../types';
+import React from "react";
+import { Box, Paper, Typography } from "@mui/material";
+import { Place } from "../types";
 
 interface MapViewProps {
   places: Place[];
@@ -17,14 +16,16 @@ const MapView: React.FC<MapViewProps> = ({ places }) => {
         <Box
           sx={{
             height: 350,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'grey.200',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "grey.200",
             borderRadius: 1,
           }}
         >
-          <Typography color="text.secondary">No places to display on map</Typography>
+          <Typography color="text.secondary">
+            No places to display on map
+          </Typography>
         </Box>
       </Paper>
     );
@@ -38,7 +39,7 @@ const MapView: React.FC<MapViewProps> = ({ places }) => {
       <Typography variant="h6" gutterBottom>
         Map View
       </Typography>
-      <Box sx={{ height: 400, borderRadius: 1, overflow: 'hidden' }}>
+      <Box sx={{ height: 400, borderRadius: 1, overflow: "hidden" }}>
         <iframe
           src={embedUrl}
           width="100%"

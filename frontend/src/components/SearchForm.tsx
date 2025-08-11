@@ -1,5 +1,4 @@
-// frontend/src/components/SearchForm.tsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   TextField,
@@ -9,9 +8,9 @@ import {
   Paper,
   Typography,
   CircularProgress,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import { QueryRequest } from '../types';
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import { QueryRequest } from "../types";
 
 interface SearchFormProps {
   onSearch: (request: QueryRequest) => void;
@@ -19,8 +18,12 @@ interface SearchFormProps {
   userLocation?: { lat: number; lng: number } | null;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ onSearch, loading, userLocation }) => {
-  const [prompt, setPrompt] = useState('');
+const SearchForm: React.FC<SearchFormProps> = ({
+  onSearch,
+  loading,
+  userLocation,
+}) => {
+  const [prompt, setPrompt] = useState("");
   const [useCache, setUseCache] = useState(true);
   const [maxResults, setMaxResults] = useState(5);
 
@@ -59,8 +62,14 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, loading, userLocation
           disabled={loading}
           sx={{ mb: 2 }}
         />
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <FormControlLabel
             control={
               <Checkbox
@@ -71,14 +80,16 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, loading, userLocation
             }
             label="Use cached results (faster)"
           />
-          
+
           <Button
             type="submit"
             variant="contained"
-            startIcon={loading ? <CircularProgress size={20} /> : <SearchIcon />}
+            startIcon={
+              loading ? <CircularProgress size={20} /> : <SearchIcon />
+            }
             disabled={loading || !prompt.trim()}
           >
-            {loading ? 'Searching...' : 'Search'}
+            {loading ? "Searching..." : "Search"}
           </Button>
         </Box>
       </Box>

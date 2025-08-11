@@ -1,4 +1,3 @@
-# scripts/setup.ps1
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host "LLM Maps Integration Setup" -ForegroundColor Cyan
 Write-Host "================================" -ForegroundColor Cyan

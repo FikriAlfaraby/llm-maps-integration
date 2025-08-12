@@ -1,9 +1,12 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
 require("dotenv").config();
 
 const config = require("./config/config");
@@ -18,6 +21,7 @@ app.use(
   cors({
     origin: config.security.corsOrigin,
     credentials: true,
+    optionsSuccessStatus: 200,
   })
 );
 
@@ -37,31 +41,63 @@ app.use(
 const limiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
   max: config.rateLimit.maxRequests,
-  message: "Too many requests, please try again later.",
+  message: {
+    error: "Too many requests, please try again later.",
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable `X-RateLimit-*` headers
 });
-
 app.use("/api/", limiter);
 
-app.use("/api", apiRoutes);
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "LLM Maps Integration API",
+      version: "1.0.0",
+      description: "API documentation for the LLM Maps Integration backend.",
+    },
+    servers: [
+      {
+        url: `http://localhost:${config.port}/api`,
+      },
+    ],
+  },
+  apis: ["./src/routes/queryRoutes.js"],
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.use((err, req, res, next) => {
-  logger.error("Unhandled error:", err);
-  res.status(500).json({
-    error: "Internal server error",
-    message: process.env.NODE_ENV === "development" ? err.message : undefined,
-  });
-});
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use("/api", apiRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-const PORT = config.port;
+app.use((err, req, res, next) => {
+  logger.error("Unhandled error:", err);
+  const response = {
+    error: "Internal server error",
+  };
+  if (process.env.NODE_ENV === "development") {
+    response.message = err.message;
+    response.stack = err.stack;
+  }
+  res.status(500).json(response);
+});
+
+const PORT = config.port || 3000;
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
-  logger.info(`Environment: ${config.nodeEnv}`);
-  logger.info(`LLM Provider: ${config.llm.provider}`);
-  logger.info(`LLM Model: ${config.llm.model}`);
+  logger.info(
+    `Environment: ${config.nodeEnv || process.env.NODE_ENV || "unknown"}`
+  );
+  logger.info(`LLM Provider: ${config.llm?.provider || "not configured"}`);
+  logger.info(`LLM Model: ${config.llm?.model || "not configured"}`);
+  logger.info(
+    `API Documentation available at http://localhost:${PORT}/api-docs`
+  );
 });
 
 module.exports = app;

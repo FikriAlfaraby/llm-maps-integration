@@ -92,7 +92,9 @@ The main query processing uses a **RAG (Retrieval-Augmented Generation)** approa
 
 ### Flowchart
 
-![Flowchart](./docs/images/flowchart.png)
+<p align="center">
+  <img src="./docs/images/flowchart.png" alt="Flowchart" width="300">
+</p>
 
 ---
 

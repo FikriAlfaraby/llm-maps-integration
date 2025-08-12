@@ -1,43 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- Set the language for better accessibility and search engine context -->
+<html lang="id">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <!-- 
+      Improved SEO Meta Tags
+      - Title: Descriptive and keyword-rich for search results.
+      - Description: A compelling summary for search engine snippet.
+      - Canonical: Prevents duplicate content issues by specifying the preferred URL.
+    -->
+    <title>
+      App | Rekomendasi Tempat Kuliner, Wisata atau Tempat Seru Lainya
+    </title>
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Temukan rekomendasi tempat makan, kafe, dan destinasi wisata terbaik di Bandung dengan D App. Baca ulasan, lihat foto, dan rencanakan petualangan kuliner Anda dengan mudah!"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <link rel="canonical" href="https://heypico-demo.fikrialfaraby.com/" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
+    <!-- 
+      Open Graph Meta Tags for Social Media Sharing
+      - These tags ensure a beautiful, consistent preview when the link is shared on platforms like Facebook, LinkedIn, etc.
     -->
-    <title>React App</title>
+    <meta
+      property="og:title"
+      content="D App | Rekomendasi Tempat Kuliner & Wisata"
+    />
+    <meta
+      property="og:description"
+      content="Temukan rekomendasi tempat makan, kafe, dan destinasi wisata terbaik di Bandung. Baca ulasan, lihat foto, dan rencanakan petualangan kuliner Anda."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://heypico-demo.fikrialfaraby.com/" />
+    <meta
+      property="og:image"
+      content="https://heypico-demo.fikrialfaraby.com/logo.png"
+    />
+
+    <!-- 
+      Twitter Card Meta Tags for Twitter Sharing
+      - These tags are specific to Twitter for a rich, eye-catching card.
+    -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@yourtwitterhandle" />
+    <meta
+      name="twitter:title"
+      content="D App | Rekomendasi Tempat Kuliner & Wisata"
+    />
+    <meta
+      name="twitter:description"
+      content="Temukan rekomendasi tempat makan, kafe, dan destinasi wisata terbaik di Bandung. Baca ulasan, lihat foto, dan rencanakan petualangan kuliner Anda."
+    />
+    <meta
+      name="twitter:image"
+      content="https://heypico-demo.fikrialfaraby.com/logo.png"
+    />
+
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      Performance & Optimization Tip:
+      For better SEO and user experience, consider adding preconnect and preload tags for critical resources.
+      Example: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     -->
   </body>
 </html>

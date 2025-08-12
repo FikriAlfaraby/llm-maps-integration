@@ -3,6 +3,12 @@ const mapsService = require("../services/mapsService");
 const cacheService = require("../services/cacheService");
 const logger = require("../utils/logger");
 
+/**
+ * Handles the main query processing flow using a RAG (Retrieval-Augmented Generation) approach.
+ * It extracts entities from the prompt, retrieves relevant data, and uses an LLM to generate a narrative.
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
+ */
 const processQuery = async (req, res) => {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}`;
@@ -19,6 +25,7 @@ const processQuery = async (req, res) => {
     if (use_cache) {
       const cachedResult = await cacheService.get(...cacheKey);
       if (cachedResult) {
+        logger.info(`[${requestId}] Using cached result.`);
         return res.json({
           ...cachedResult,
           cached: true,
@@ -28,52 +35,28 @@ const processQuery = async (req, res) => {
       }
     }
 
-    logger.info(`[${requestId}] Parsing prompt dengan LLM: "${prompt}"`);
-
-    const entities = await llmService.extractLocationEntities(prompt);
-    const searchKeywords =
-      entities.place_types?.length > 0
-        ? entities.place_types.join(" ")
-        : prompt;
-    const searchLocation = entities.locations?.join(" ") || "";
-
-    const mapsQuery = `${searchKeywords} ${searchLocation}`.trim();
-    logger.info(`[${requestId}] Query Maps: ${mapsQuery}`);
-
-    const userLocationStr = user_location
-      ? `${user_location.lat},${user_location.lng}`
-      : null;
-
-    const places = await mapsService.searchPlaces(
-      mapsQuery,
-      userLocationStr,
-      null,
-      null
+    logger.info(
+      `[${requestId}] Processing query with RAG approach: "${prompt}"`
     );
 
-    if (!places || places.length === 0) {
+    // Replace the entire extraction, search, and summary flow with a single RAG call.
+    const recommendation =
+      await llmService.findPlacesAndGenerateNarrativeWithRAG(
+        prompt,
+        user_location,
+        max_results
+      );
+
+    if (!recommendation) {
       return res.status(404).json({
-        error: "No places found",
+        error: "No recommendations found.",
         request_id: requestId,
       });
     }
 
-    const limitedPlaces = places.slice(0, max_results);
-
-    const mapsSummaryPrompt = `
-      Buat deskripsi singkat yang ramah dan informatif untuk user, berdasarkan daftar tempat berikut:
-      ${JSON.stringify(limitedPlaces, null, 2)}
-      Gunakan bahasa yang sama dengan query asli.
-      Jangan menambahkan tempat baru yang tidak ada di daftar.
-    `;
-    const llmNarrative = await llmService.generateResponse(
-      mapsSummaryPrompt,
-      "You are a friendly travel & food recommendation assistant."
-    );
-
     const responseData = {
-      llm_text: llmNarrative,
-      places: limitedPlaces,
+      llm_text: recommendation.llm_text,
+      places: recommendation.places,
       request_id: requestId,
       cached: false,
       processing_time: Date.now() - startTime,
@@ -83,9 +66,7 @@ const processQuery = async (req, res) => {
       await cacheService.set(responseData, 1800, ...cacheKey);
     }
 
-    logger.info(
-      `[${requestId}] Selesai dalam ${responseData.processing_time}ms`
-    );
+    logger.info(`[${requestId}] Finished in ${responseData.processing_time}ms`);
     res.json(responseData);
   } catch (error) {
     logger.error(`[${requestId}] Query processing failed:`, error);

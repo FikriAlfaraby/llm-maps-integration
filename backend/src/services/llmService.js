@@ -7,10 +7,9 @@ class LLMService {
     this.provider = config.llm.provider;
     this.endpoint = config.llm.endpoint;
     this.model = config.llm.model;
-    this.timeout = config.llm.timeout || 300000;
+    this.timeout = config.llm.timeout || 60000;
     this.defaultTemperature = config.llm.temperature ?? 0.7;
     this.defaultMaxTokens = config.llm.maxTokens ?? 500;
-    this.keepAlive = config.llm.keepAlive || "5m";
   }
 
   async generateResponse(prompt, systemPrompt = null, opts = {}) {
@@ -54,72 +53,21 @@ class LLMService {
       model: this.model,
       messages,
       stream: false,
-      keep_alive: this.keepAlive || "5m", // Kurangi dari 10m untuk save memory
       options: {
         temperature: opts.temperature,
-        num_predict: opts.maxTokens || 200, // Batasi max tokens
-
-        // OPTIMIZED FOR 4 vCPUs, 16GB RAM
-        num_ctx: 2048, // KEEP DEFAULT - jangan perbesar, VM terbatas
-        num_batch: 128, // KEEP DEFAULT - sesuai dengan RAM
-        num_thread: 4, // Match dengan vCPU count
-        num_keep: 4, // Kurangi memory usage
-
-        // Memory optimization untuk 16GB RAM
-        mmap: true, // Enable memory mapping
-        numa: false, // Disable NUMA
-        use_mlock: false, // Don't lock memory
-
-        // GPU settings
-        num_gpu: 0, // No GPU available
-        main_gpu: 0,
-        f16_kv: true, // Use 16-bit for KV cache (save memory)
-
-        // Response control
-        stop: ["\n\n", "User:", "Human:"],
-        repeat_penalty: 1.1,
-        repeat_last_n: 64, // Kurangi dari default
-
-        // Sampling parameters - optimize for speed
-        top_k: 40,
-        top_p: 0.9,
-        min_p: 0.05,
-        typical_p: 1,
-        tfs_z: 1,
-
-        // Performance untuk AMD Rome CPU
-        seed: -1,
-        vocab_only: false,
-        low_vram: true, // Enable low memory mode
-
-        // Rope settings
-        rope_freq_base: 10000.0,
-        rope_freq_scale: 1.0,
+        num_predict: opts.maxTokens,
       },
     };
 
     try {
       logger.info(
-        `Calling Ollama ${this.endpoint}/api/chat model=${this.model} [4vCPU/16GB config]`
-      );
-
-      // Add AbortController untuk better timeout handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        opts.timeout || 60000
+        `Calling Ollama ${this.endpoint}/api/chat model=${this.model}`
       );
 
       const response = await axios.post(`${this.endpoint}/api/chat`, body, {
-        timeout: opts.timeout || 60000, // 1 minute default
+        timeout: opts.timeout,
         headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        validateStatus: (status) => status < 500,
       });
-
-      clearTimeout(timeoutId);
 
       const data = response.data;
 
@@ -143,60 +91,32 @@ class LLMService {
         throw new Error("Empty response from Ollama");
       }
 
-      logger.info(
-        `Response: ${rawText.length} chars in ${Date.now() - startTime}ms`
-      );
       return rawText;
     } catch (error) {
-      if (error.name === "AbortError") {
-        logger.error(`Request aborted after ${opts.timeout || 60000}ms`);
-
-        // Coba dengan prompt yang lebih pendek
-        if (prompt.length > 500 && !opts.isRetry) {
-          logger.info("Retrying with shorter prompt...");
-          const shortPrompt = prompt.substring(0, 500) + "...";
-          return this.ollamaGenerate(shortPrompt, systemPrompt, {
-            ...opts,
-            maxTokens: 100, // Kurangi output
-            timeout: 90000, // 1.5 minutes
-            isRetry: true,
-          });
-        }
-        throw new Error("Request timeout. VM resources may be insufficient.");
-      }
-
       if (error.response) {
-        logger.error("Ollama API error:", {
+        logger.error("Ollama API error response:", {
           status: error.response.status,
           data: error.response.data,
         });
-
         if (error.response.status === 404) {
           throw new Error(
-            `Model '${this.model}' not found. Run: ollama pull ${this.model}`
+            `Model '${this.model}' not found on Ollama. Run: ollama pull ${this.model}`
           );
-        } else if (error.response.status === 503) {
-          // Server overloaded - wait and retry
-          if (!opts.isRetry) {
-            logger.info("Server busy, waiting 5s before retry...");
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-            return this.ollamaGenerate(prompt, systemPrompt, {
-              ...opts,
-              isRetry: true,
-            });
-          }
-          throw new Error("Ollama overloaded. Not enough VM resources.");
         } else if (error.response.status >= 500) {
-          throw new Error(`Ollama server error (${error.response.status})`);
+          throw new Error("Ollama server error. Check Ollama logs.");
         }
       } else if (error.code === "ECONNREFUSED") {
-        throw new Error("Cannot connect to Ollama. Run: ollama serve");
+        throw new Error(
+          "Cannot connect to Ollama. Ensure 'ollama serve' is running."
+        );
       } else if (error.code === "ETIMEDOUT") {
-        throw new Error("Network timeout. Check Ollama status.");
+        throw new Error("Ollama request timed out. Model may be loading.");
       }
 
       logger.error("Ollama error:", error.message || error);
-      throw new Error(`LLM failed: ${error.message || error}`);
+      throw new Error(
+        `Failed to generate LLM response: ${error.message || error}`
+      );
     }
   }
 

@@ -39,8 +39,8 @@ services:
     container_name: llm-maps-frontend
     ports:
       - "3000:80"
-    environment:
-      - REACT_APP_API_URL=https://heypico-demo.fikrialfaraby.com/api
+    env_file:
+      - frontend/.env
     depends_on:
       - backend
     networks:
